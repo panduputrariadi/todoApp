@@ -1,7 +1,8 @@
 import { useState } from "react";
-import TodoItem from "./components/TodoItem"
 import { dummyData } from "./utils/todos"
 import TodoForm from "./components/TodoForm";
+import TodoList from "./components/TodoList";
+import TodoSummary from "./components/TodoSummary";
 
 function App() {
 
@@ -21,7 +22,7 @@ function App() {
     setTodos(
       (prevTodos => [
         {
-          id: prevTodos.length+1,
+          id: Date.now(),
           title,
           complete: false
         },
@@ -30,24 +31,31 @@ function App() {
     )
   }
 
+  function deleteTodo(id:number){
+    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id))
+  }
+
+  function deleteAllTodo(){
+    setTodos(prevTodo => prevTodo.filter(todo => !todo.complete))
+  }
+
   return (
-    <main className="py-10 space-y-5">
+    <main className="py-10 space-y-5 overflow-y-auto">
       <h1 className="font-bold text-3xl text-center">Your Todo Apps</h1>
       <div className="max-w-lg mx-auto bg-slate-100 rounded-md p-5">
         <TodoForm 
           onSubmit={addTodo}
         />
-        <div className="space-y-2">
-          {/* memanggil dummy data yang telah di buat */}
-          {todos.map(todo => (
-            <TodoItem 
-              key={todo.id}
-              todo={todo}
-              onCompleteChange={setTodoComplete}
-              />
-          ))}
-        </div>
+        <TodoList 
+          todos={todos} 
+          onCompleteChange={setTodoComplete} 
+          onDelete={deleteTodo}
+        />
       </div>
+      <TodoSummary 
+        todos={todos}
+        deleteAllCompleted={deleteAllTodo}
+      />
     </main>
   )
 }
